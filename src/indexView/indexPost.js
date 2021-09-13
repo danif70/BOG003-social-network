@@ -19,20 +19,16 @@ export const functionPost = () => {
         
         /* eslint-disable */
         window.location.href = '#/initial';
-        //searchInput.value='';
       }).catch((error) => {
       });
   });
 
   inputPostUser.addEventListener('click', async () => {
-    // window.location.href = '#/post';
     divElement.querySelector('#containerPost').innerHTML = '';
     const recipe = divElement.querySelector('#recipePostear').value;
     const fecha = new Date();
-    //const date = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
     var db = firebase.firestore();
     const user = firebase.auth().currentUser;
-    // let userLogin='';
     await db.collection("post").add({
       name: user.displayName,
       recipe: recipe,
@@ -60,9 +56,6 @@ export const functionPost = () => {
             const helloUser = divElement.querySelector('#helloUser');
             helloUser.innerHTML = `Hola ${user.displayName}`; 
             showPost(snapshot.docs, user)
-            //editing();
-            //deliting();
-            //liking();
             searching();
           })
       }
@@ -79,18 +72,12 @@ export const functionPost = () => {
         postData.fecha = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
         const idPost = post.id;
         addHtml += createPost(postData, user, idPost);
-        //addHtml += createPost(post, user);
       });
-      // const divcontainerPost = document.createElement('div');
-      //divcontainerPost.innerHTML = addHtml;
       divElement.querySelector('#containerPost').innerHTML='';
-      //divElement.querySelector('#containerPost').appendChild(divcontainerPost);
       divElement.querySelector('#containerPost').innerHTML=addHtml;
-      //liking();
       editing();
       deliting();
       liking();
-      //searching();
     }
   }
 
@@ -107,8 +94,6 @@ export const functionPost = () => {
         }
         else {
           const editedPost = divElement.querySelector(`.${e.target.id}`).value;
-          //console.log(e.target.id);
-          //console.log(editedPost);
           const db = firebase.firestore();
           const fecha = new Date();
           const date = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
@@ -134,11 +119,9 @@ export const functionPost = () => {
       //console.log('esto son los delete ', deleteButtons);
       deleteButtons.forEach(deleteButton => {
         deleteButton.addEventListener('click',async (e)=>{
-        //alert()para confirmar eliminar el post
           if (confirmationDelete()=== true){
             const db = firebase.firestore();
             const idButtonDelete = e.target.dataset.id;
-            //console.log(idButtonDelete);
             await db.collection("post").doc(idButtonDelete).delete();
             loadPost();
           }
@@ -155,14 +138,11 @@ export const functionPost = () => {
         likeButton.addEventListener('click', async (e)=>{
           const db = firebase.firestore();
           const idButtonLike = e.target.dataset.id;
-          // console.log(idButtonDelete);
           const postLike = await db.collection("post").doc(idButtonLike).get();
-          //console.log(postLike.data());
           const likes =postLike.data().like;
           const user = firebase.auth().currentUser;
           if(likes.length>0){
             if(likes.includes(user.uid)){
-              //console.log("ya le dio like");
               let newlikes=[];
               likes.forEach(item=>{
                 if(item!==user.uid){
@@ -171,14 +151,11 @@ export const functionPost = () => {
               })
               await db.collection("post").doc(`${idButtonLike}`).update({like: newlikes});
             } else {
-              //const user = firebase.auth().currentUser;
               likes.push(user.uid);
-              //console.log(likes);
               await db.collection("post").doc(`${idButtonLike}`).update({like: likes});
             }
           } else {
             likes.push(user.uid);
-            //console.log(likes);
             await db.collection("post").doc(`${idButtonLike}`).update({like: likes});
           }          
           loadPost(); 
@@ -228,19 +205,15 @@ export const functionPost = () => {
 const searching = () => {
   searchInput.addEventListener('keyup', async (e) => {
    let search = e.target.value;
-   //console.log(search);
    const postBuscados = await firebase.firestore().collection('post').orderBy('fecha', 'desc').get();
-   //console.log(postBuscados.docs);
    const postsShearch =[];
    postBuscados.docs.forEach(post=>{
      if(post.data().recipe.toLowerCase().includes(search.toLowerCase())){
        postsShearch.push(post);
-       //console.log(post.data());
      }
     
    })
    const user=firebase.auth().currentUser;
-   //console.log(user.displayName);
    if(postsShearch.length>0){
     showPost(postsShearch, user);
    }   
