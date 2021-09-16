@@ -31,10 +31,6 @@ export const functionNewAccount = () => {
           user.updateProfile({
             displayName: nameUser,
           })
-          // const config = {
-          //   url: 'https://camilaforer.github.io/BOG003-social-network/src/#/initial'
-          // }
-          // userCredential.user.sendEmailVerification(config);
           cleanRegister();
           window.location.href = '#/initial';
           emailVerification();
