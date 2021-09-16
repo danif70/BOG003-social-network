@@ -88,4 +88,4 @@ Se presentó la primera versión a varios usuarios y se sugirió eliminar la pan
 
 ![LogIn](/src/images/LogIn.jpeg)
 ![Registro](/src/images/registro.jpeg)
-![Feed](/src/images/Feed.JPG)
+![Feed](/src/images/Feed.jpeg)
