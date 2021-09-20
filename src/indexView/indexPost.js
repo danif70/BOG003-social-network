@@ -8,10 +8,6 @@ export const functionPost = () => {
   const inputPostUser = divElement.querySelector('#inputPostear');
   const searchInput = divElement.querySelector('#searchInput');
   let enableEdit = true;
-  document.addEventListener('DOMContentLoaded', async () => {
-    /* eslint-disable */;
-    loadPost();
-  });
 
   buttonSignOut.addEventListener('click', () => {
     signOutDelicious()
@@ -24,7 +20,7 @@ export const functionPost = () => {
   });
 
   inputPostUser.addEventListener('click', async () => {
-    divElement.querySelector('#containerPost').innerHTML = '';
+    //divElement.querySelector('#containerPost').innerHTML = '';
     const recipe = divElement.querySelector('#recipePostear').value;
     const fecha = new Date();
     var db = firebase.firestore();
@@ -37,7 +33,7 @@ export const functionPost = () => {
       like: [],
       })
       .then(() => {
-          loadPost();
+          // loadPost();
           divElement.querySelector('#recipePostear').value='';
       })
       .catch(() => {
@@ -46,22 +42,44 @@ export const functionPost = () => {
       });
     });
 
-  const loadPost = () => {
-    const db = firebase.firestore();
-    firebase.auth().onAuthStateChanged(user => {
-      if(user){
-        db.collection('post').orderBy('fecha', 'desc')
-          .get()
-          .then((snapshot) => {
-            const helloUser = divElement.querySelector('#helloUser');
-            helloUser.innerHTML = `Hola ${user.displayName}`; 
-            showPost(snapshot.docs, user)
-            searching();
-          })
-      }
-    });
-  }
+  const observer = firebase.firestore().collection("post")
+  .orderBy('fecha', 'asc')
+  .onSnapshot((snapshot) => {
+      snapshot.docChanges().forEach((change) => {        
+          if (change.type === "added") {
+            const user = firebase.auth().currentUser;
+            showOnePost(change.doc, user);
+          }
 
+          if (change.type === "modified"){
+            //TODO
+          }
+
+          if (change.type === "removed") {
+            const idPost = change.doc.id;
+            const divPost = document.getElementById(`containerPost-${idPost}`);
+            if(divPost){
+              const container = document.querySelector('#containerPost');
+              container.removeChild(divPost.parentElement);
+            }
+          }
+      });
+  });
+
+  const showOnePost = (post, user) => {
+      const postData = post.data();
+      const date = new Date(postData.fecha.seconds*1000)
+      postData.fecha = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+      const idPost = post.id;
+      const addHtml = createPost(postData, user, idPost);
+      const divElement =  document.createElement('div');
+      divElement.innerHTML = addHtml;
+      const container = document.querySelector('#containerPost');
+      container.insertAdjacentElement("afterbegin", divElement);
+      editing();
+      deliting();
+      liking();
+  }
 
   const showPost = (data, user) => {
     if(data.length){
@@ -99,7 +117,7 @@ export const functionPost = () => {
           const date = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
           await db.collection("post").doc(`${e.target.id}`).update({recipe: editedPost, fecha: fecha,});
           enableEdit = true;
-          loadPost();
+          // loadPost();
         }
       })
     })
@@ -123,10 +141,10 @@ export const functionPost = () => {
             const db = firebase.firestore();
             const idButtonDelete = e.target.dataset.id;
             await db.collection("post").doc(idButtonDelete).delete();
-            loadPost();
+            // loadPost();
           }
           else {
-            loadPost(); 
+            // loadPost(); 
           }
         })
       })
@@ -158,7 +176,7 @@ export const functionPost = () => {
             likes.push(user.uid);
             await db.collection("post").doc(`${idButtonLike}`).update({like: likes});
           }          
-          loadPost(); 
+          // loadPost(); 
         })
       })
     }
@@ -167,7 +185,7 @@ export const functionPost = () => {
     let template = '';
     if(data.user===user.uid){
       template = `
-      <div class= "containerPost">
+      <div class= "containerPost" id= "containerPost-${idPost}">
       <div class= "userContainerPost">
           <div class="headerPost">
             <p class="postName postNameDesktop">${data.name}</p>
@@ -185,7 +203,7 @@ export const functionPost = () => {
       `;
     } else {
       template = `
-        <div class= "containerPost">
+      <div class= "containerPost" id= "containerPost-${idPost}">
           <div class="headerPost">
             <p class="postName postNameDesktop">${data.name}</p>
             <p class="datePost datePostDesktop">${data.fecha}</p>
@@ -202,7 +220,8 @@ export const functionPost = () => {
     }
     return template;
   }
-const searching = () => {
+  
+  const searching = () => {
   searchInput.addEventListener('keyup', async (e) => {
    let search = e.target.value;
    const postBuscados = await firebase.firestore().collection('post').orderBy('fecha', 'desc').get();

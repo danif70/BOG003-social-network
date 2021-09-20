@@ -4,20 +4,20 @@ export const changeView = (route) => {
   const container = document.getElementById('container');
   container.innerHTML = '';
   switch (route) {
-    case './src/index.html': {
-      return container.appendChild(view.initial);
-    }
-    case '#/initial': {
-      return container.appendChild(view.initial);
-    }
-    case '#/newAccount': {
-      return container.appendChild(view.newAccount);
-    }
-    case '#/post': {
-      return container.appendChild(view.post);
-    }
-    default: {
-      return container.appendChild(view.errors);
-    }
+    case './src/index.html':
+      container.appendChild(view.initial);
+      break;
+    case '#/initial':
+      container.appendChild(view.initial);
+      break;
+    case '#/newAccount':
+      container.appendChild(view.newAccount);
+      break;
+    case '#/post':
+      container.appendChild(view.post);
+      break;
+    default:
+      container.appendChild(view.errors);
+      break;
   }
 };

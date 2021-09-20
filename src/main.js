@@ -6,6 +6,6 @@ const init = () => {
 };
 
 window.addEventListener('load', () => {
-  window.location.hash = '#/initial';
+  //window.location.hash = '#/initial';
   init();
 });
