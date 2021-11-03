@@ -1,5 +1,7 @@
 ![Delicious!](/src/images/Delicious!.png)
 
+## Proyecto realizado por Mariela Candelo, Camila Forero y Daniela Funes
+
 # Social Network
 #### Link a proyecto
 [Delicious! SN2 BOG003](https://camilaforer.github.io/BOG003-social-network/src/#/initial)
